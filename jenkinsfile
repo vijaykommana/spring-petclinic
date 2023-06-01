@@ -14,8 +14,9 @@ pipeline{
         }
         stage('sonar'){
             steps{
-                withSonarQubeEnv(credentialsId: 'sonar') {
-                sh "mvn clean package sonar:sonar"}
+                withSonarQubeEnv('SONAR_CLOUD') {
+                 sh 'mvn clean package sonar:sonar'
+                }
             }
         }
          stage('log and push'){
