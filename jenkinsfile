@@ -12,30 +12,46 @@ pipeline{
                 sh "mvn compile"
             }
         }
-        stage('sonar'){
+        stage('test'){
             steps{
-                withSonarQubeEnv('vijay'){
-                 sh "mvn clean package sonar:sonar"
-                }
+                sh "mvn test"
+            }
+        }
+        stage('integration test'){
+            steps{
+                sh "mvn varify -DskipUnitTests"
+            }
+        }
+        stage ('Artifactory configuration') {
+            steps {
+                rtServer (
+                    id: "ARTIFACTORY_SERVER",
+                    url:'https://vijay00007.jfrog.io/artifactory',
+                    credentialsId: 'vijay'
+                )
+
+                rtMavenDeployer (
+                    id: "MAVEN_DEPLOYER",
+                    serverId: "ARTIFACTORY_SERVER",
+                    releaseRepo: 'libs-release',
+                    snapshotRepo: 'libs-snapshot'
+                )
+
+                rtMavenResolver (
+                    id: "MAVEN_RESOLVER",
+                    serverId: "ARTIFACTORY_SERVER",
+                    releaseRepo: 'libs-release',
+                    snapshotRepo: 'libs-snapshot'
+                )
             }
         }
          stage('log and push'){
             steps{
                 sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 869388788941.dkr.ecr.us-west-2.amazonaws.com"
-               
-            }
-        }
-        stage('build'){
-            steps{
-                 sh 'docker image build -t spc:1.2 .'
-            }
-        }
-        stage('push'){
-            steps{
+                sh 'docker image build -t spc:1.2 .'
                 sh "docker image tag spc:1.2 869388788941.dkr.ecr.us-west-2.amazonaws.com/vijay:2.0"
                
             }
         }
-      
     }
 }
