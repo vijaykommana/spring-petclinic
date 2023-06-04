@@ -53,5 +53,16 @@ pipeline{
                
             }
         }
+       
+         stage('terraform'){
+            steps{
+                dir('terraform') {
+                  sh "terraform init"
+                  sh "terraform fmt"
+                  sh "terraform validate"
+                  sh "terraform apply --auto-approve"
+               }
+            }
+        }
     }
 }
