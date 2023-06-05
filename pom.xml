@@ -397,6 +397,9 @@
                         <goals>
                           <goal>validate</goal>
                         </goals>
+                        <configuration>
+                          <finalName>vijay</finalName>
+                        </configuration>
                       </pluginExecutionFilter>
                       <action>
                         <ignore />
